@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVI Images</title>
+
+    <style>
+        body {
+            background-color: #000033; /* dark background */
+            color: #ff3333; /* ired */
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            color: #00ccff; /* neon */
+        }
+
+        input[type="text"] {
+            padding: 5px;
+            margin: 10px;
+            font-size: 16px;
+            border: 1px solid #ff3333; /* ired */
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #00ccff; /* neon */
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #image-container {
+            margin-top: 20px;
+        }
+
+        #image-container img {
+            max-width: 100%;
+            margin-top: 20px;
+        }
+
+        a {
+            color: #00ccff; /* neon */
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
+    <script>
+        function generateImage() {
+            const API_URL = "https://api-inference.huggingface.co/models/Kvikontent/kviimager2.0";
+            const headers = { "Authorization": "Bearer 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" };
+
+            const prompt = document.getElementById("prompt").value;
+
+            fetch(API_URL, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ "inputs": prompt })
+            })
+            .then(response => response.blob())
+            .then(imageBlob => {
+                const imageUrl = URL.createObjectURL(imageBlob);
+                const imageElement = document.createElement("img");
+                imageElement.src = imageUrl;
+
+                const imageContainer = document.getElementById("image-container");
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(imageElement);
+
+                const downloadButton = document.createElement("a");
+                downloadButton.href = imageUrl;
+                downloadButton.download = "generated_image.png";
+                downloadButton.textContent = "Download Image";
+                imageContainer.appendChild(downloadButton);
+            })
+            .catch(error => {
+                console.error('Error generating image:', error);
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <h1>KVI Images Generator</h1>
+    <input type="text" id="prompt" placeholder="Enter your image prompt">
+    <button onclick="generateImage()">Generate</button>
+
+    <div id="image-container"></div>
+</body>
+
+</html>
